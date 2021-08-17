@@ -20,7 +20,9 @@ public class MainActivity extends AppCompatActivity {
 
     TextToSpeech TTS;
     public static final String TAG = "Slang";
-    String TEXT = "Welcome to Slang Retail Assistant. What product are you looking for?";
+    String TEXT_EN = "Welcome to Slang Retail Assistant. What product are you looking for?";
+    String TEXT_HI = "स्लैंग रिटेल असिस्टेंट में आपका स्वागत है। आप किस उत्पाद की तलाश में हैं?";
+    String TEXT_KN = "ಗ್ರಾಮ್ಯ ಚಿಲ್ಲರೆ ಸಹಾಯಕರಿಗೆ ಸುಸ್ವಾಗತ. ನೀವು ಯಾವ ಉತ್ಪನ್ನವನ್ನು ಹುಡುಕುತ್ತಿದ್ದೀರಿ?";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,22 +72,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    class SortByName implements Comparator<Voice>{
+    static class SortByName implements Comparator<Voice> {
 
         @Override
         public int compare(Voice o1, Voice o2) {
-            return (o2.getName()).compareTo((o1.getName()));
+            return (o1.getName().charAt(0)) - (o2.getName().charAt(0));
         }
     }
 
     void setupButtons(ArrayList<Voice> voices) {
 
-        Log.d(TAG, "setupButtons: "+voices.size());
+        Log.d(TAG, "setupButtons: " + voices.size());
         LinearLayout linearLayout = findViewById(R.id.linearLayout);
 
         Collections.sort(voices, new SortByName());
 
-        for(Voice voice:voices){
+        for (Voice voice : voices) {
             Button button = new Button(this);
 
             button.setText(voice.getName());
@@ -94,7 +96,22 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     TTS.setVoice(voice);
-                    TTS.speak(TEXT, TextToSpeech.QUEUE_FLUSH, null, null);
+                    Log.d(TAG, "onClick: "+voice.getLocale().toString());
+                    switch (voice.getLocale().toString()) {
+                        case "en_IN":
+                            TTS.speak(TEXT_EN, TextToSpeech.QUEUE_FLUSH, null, null);
+                            break;
+                        case "hi_IN":
+                            TTS.speak(TEXT_HI, TextToSpeech.QUEUE_FLUSH, null, null);
+                            break;
+                        case "kn_IN":
+                            TTS.speak(TEXT_KN, TextToSpeech.QUEUE_FLUSH, null, null);
+                            break;
+                        default:
+                            TTS.speak(TEXT_EN, TextToSpeech.QUEUE_FLUSH, null, null);
+
+                    }
+
                 }
             });
 
