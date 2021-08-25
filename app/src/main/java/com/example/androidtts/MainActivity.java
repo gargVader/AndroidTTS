@@ -26,8 +26,9 @@ public class MainActivity extends AppCompatActivity {
     String TEXT_EN = "Welcome to Slang Retail Assistant. What product are you looking for?";
     String TEXT_HI = "स्लैंग रिटेल असिस्टेंट में आपका स्वागत है। आप किस उत्पाद की तलाश में हैं?";
     String TEXT_KN = "ಗ್ರಾಮ್ಯ ಚಿಲ್ಲರೆ ಸಹಾಯಕರಿಗೆ ಸುಸ್ವಾಗತ. ನೀವು ಯಾವ ಉತ್ಪನ್ನವನ್ನು ಹುಡುಕುತ್ತಿದ್ದೀರಿ?";
-    int e = 1, h = 1, k = 1;
-    int e_end = 5, h_end = 4, k_end = 2;
+    String TEXT_VN = "Chào mừng bạn đến với Trợ lý bán lẻ tiếng lóng. Bạn đang tìm kiếm sản phẩm nào?";
+    int e = 1, h = 1, k = 1, v=0;
+    int e_end = 5, h_end = 4, k_end = 2; // starting index for male voice
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private static class LongTask extends AsyncTask<Object, Void, ArrayList<Voice>> {
-
         MainActivity mainActivity;
 
         public LongTask(MainActivity mainActivity) {
@@ -62,7 +62,8 @@ public class MainActivity extends AppCompatActivity {
             for (Voice v : allVoices) {
                 if ((v.getLocale().toString().equals("en_IN") ||
                         v.getLocale().toString().equals("hi_IN") ||
-                        v.getLocale().toString().equals("kn_IN"))
+                        v.getLocale().toString().equals("kn_IN") ||
+                        v.getLocale().toString().equals("vi_VN"))
                         && v.getName().contains("network")) {
                     Log.d(TAG, v.toString());
                     voices.add(v);
@@ -79,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     static class SortByName implements Comparator<Voice> {
-
         @Override
         public int compare(Voice o1, Voice o2) {
             if ((o1.getName().charAt(0)) - (o2.getName().charAt(0)) == 0) {
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView textView = new TextView(this);
         textView.setTextAppearance(R.style.TextAppearance_AppCompat_Body1);
-        textView.setText("Your system default TTS speech rate is="+(speechRate/100.0));
+        textView.setText("Your system default TTS speech rate is=" + (speechRate / 100.0));
         linearLayout.addView(textView);
 
         Collections.sort(voices, new SortByName());
@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
             Button button = new Button(this);
             Voice voice = voices.get(i);
 
-            button.setText(getButtonName(voice.getName().charAt(0)));
+            button.setText(getButtonName(voice.getName().charAt(0), i));
             button.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 200));
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     TTS.setVoice(voice);
-                    Log.d(TAG, "onClick: " + voice.getLocale().toString());
+                    Log.d(TAG, "onClick: " + voice.getName());
                     switch (voice.getLocale().toString()) {
                         case "en_IN":
                             TTS.speak(TEXT_EN, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity {
                             break;
                         case "kn_IN":
                             TTS.speak(TEXT_KN, TextToSpeech.QUEUE_FLUSH, null, null);
+                            break;
+                        case "vi_VN":
+                            TTS.speak(TEXT_VN, TextToSpeech.QUEUE_FLUSH, null, null);
                             break;
                         default:
                             TTS.speak(TEXT_EN, TextToSpeech.QUEUE_FLUSH, null, null);
@@ -163,11 +166,13 @@ public class MainActivity extends AppCompatActivity {
                 return "Hindi Voice";
             case 'k':
                 return "Kannada Voice";
+            case 'v':
+                return "Vietnamese Voice";
         }
         return "";
     }
 
-    String getButtonName(char c) {
+    String getButtonName(char c, int idx) {
         String name;
         switch (c) {
             case 'e':
@@ -184,6 +189,13 @@ public class MainActivity extends AppCompatActivity {
                 name = "Voice " + (k++);
                 if (k > k_end) name += " Male";
                 else name += " Female";
+                return name;
+            case 'v':
+                name = "Voice " + (v+1);
+
+                if(v<=1 || v==3) name+= " Female";
+                if(v==2 || v==4) name+= " Male";
+                v++;
                 return name;
         }
         return "";
