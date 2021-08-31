@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="English" type="id" />
+    <item name="Hindi" type="id" />
+    <item name="Kannada" type="id" />
+    <item name="Vietnamese" type="id" />
+
+</resources>
