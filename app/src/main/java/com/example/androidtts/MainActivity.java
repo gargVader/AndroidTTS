@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 TextView nameTextView = new TextView(this);
                 nameTextView.setText("Please select a voice to show its identifier");
                 nameTextView.setId(getId(voice.getName().charAt(0)));
+                nameTextView.setTextIsSelectable(true);
                 linearLayout.addView(nameTextView);
             }
 
